@@ -1,16 +1,18 @@
+import os
+import time
+import logging
 import numpy as np
 import pandas as pd
 import tensorflow as tf
 import tensorflow_hub as hub
-import os
-import time
-import logging
 logging.basicConfig(filename="../logs/train.log", level = logging.INFO)
 
 def load_datasets(file_path, num_samples):
-	df = pd.read_csv(file_path, usecols=[6,9], nrows=num_samples)
+	df = pd.read_csv(file_path, usecols=[6,9], 
+			nrows=num_samples)
 	text = df.iloc[:,1].values.tolist()
-	text = np.array([str(t).encode("ascii", "replace") for t in text], dtype="object")
+	text = np.array([str(t).encode("ascii", "replace") 
+				for t in text], dtype="object")
 	labels = df.iloc[:, 0].values.tolist()
 	labels = [1 if i>=4 else 0 if i==3 else -1 for i in labels]
 	labels = np.array(pd.get_dummies(labels, dtype=int)) 
@@ -22,10 +24,14 @@ def get_model():
 				   dtype=tf.string)
 	model = tf.keras.models.Sequential()
 	model.add(hub_layer)
-	model.add(tf.keras.layers.Dense(units=10, activation="relu"))
-	model.add(tf.keras.layers.Dense(units=3, activation="softmax", name="output"))
+	model.add(tf.keras.layers.Dense(units=10,
+					activation="relu"))
+	model.add(tf.keras.layers.Dense(units=3, 
+					activation="softmax", 
+					name="output"))
 
-	model.compile(loss = "categorical_crossentropy",optimizer="adam", metrics=["accuracy"])
+	model.compile(loss = "categorical_crossentropy",
+		      optimizer="adam", metrics=["accuracy"])
 	logging.info(model.summary())
 	return model
 
